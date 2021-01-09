@@ -64,11 +64,13 @@ CREATE TABLE GroupMember (
 );
 
 CREATE TABLE GroupThread (
-	group_name     VARCHAR(20),
-	group_creator  VARCHAR(30),
-	thread_ID    INTEGER,
-	thread_creator     VARCHAR(30),
+	group_name      VARCHAR(20),
+	group_creator   VARCHAR(30),
+	title           VARCHAR(80),
+	thread_ID       INTEGER,
+	thread_creator  VARCHAR(30),
 
 	PRIMARY KEY (group_name, group_creator, thread_ID, thread_creator),
-	FOREIGN KEY (group_name,group_creator) REFERENCES PrivateGroup(group_name, creator)
+	FOREIGN KEY (group_name,group_creator) REFERENCES PrivateGroup(group_name, creator),
+	FOREIGN KEY (thread_creator) REFERENCES RegisteredUser(username)
 );

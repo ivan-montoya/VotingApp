@@ -1,6 +1,8 @@
 package gui;
 
 import objects.Candidate;
+import objects.Group;
+import objects.RegisteredUser;
 import objects.VotingThread;
 
 import database.DatabaseObject;
@@ -19,6 +21,7 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -45,14 +48,17 @@ public class CreateThreadScreen extends JFrame {
 	private List<JTextField> myOptions;
 	private JRadioButton myPrivateButton;
 	private JRadioButton myPublicButton;
+	
+	private JComboBox myGroupsComboBox;
+	private List<Group> myGroups;
 
 	private DatabaseObject myDatabase;
-	private String myUsername;
+	private RegisteredUser myUser;
 	
-	public CreateThreadScreen(String username, DatabaseObject database) {
+	public CreateThreadScreen(RegisteredUser username, DatabaseObject database) {
 		
 		myDatabase = database;
-		myUsername = username;
+		myUser = username;
 		myPanel = new JPanel();
 		myOptions = new LinkedList<JTextField>();
 		createJFrame();
@@ -72,6 +78,9 @@ public class CreateThreadScreen extends JFrame {
 		
 		JPanel privatePanel = createPrivatePanel();
 		myPanel.add(privatePanel);
+		
+		myGroupsComboBox = createGroupsBox();
+		myPanel.add(myGroupsComboBox);
 		
 		JPanel optionPanel = new JPanel(new FlowLayout());
 		
@@ -104,17 +113,56 @@ public class CreateThreadScreen extends JFrame {
 		myPrivateButton = new JRadioButton("Private");
 		ButtonGroup myGroup = new ButtonGroup();
 		
+		myPublicButton.addActionListener(publicButtonAction());
+		myPrivateButton.addActionListener(privateButtonAction());
+		
 		myGroup.add(myPublicButton);
 		myGroup.add(myPrivateButton);
 		
 		myPublicButton.setSelected(true);
-		
 		
 		privatePanel.add(new JLabel("Privacy Status:"));
 		privatePanel.add(myPublicButton);
 		privatePanel.add(myPrivateButton);
 		
 		return privatePanel;
+	}
+	
+	private ActionListener publicButtonAction()
+	{
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (myPublicButton.isEnabled()) {
+					myGroupsComboBox.setEnabled(false);
+				}
+			}
+		};
+	}
+	
+	private ActionListener privateButtonAction()
+	{
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (myPrivateButton.isEnabled()) {
+					myGroupsComboBox.setEnabled(true);
+				}
+			}
+		};
+	}
+	
+	private JComboBox createGroupsBox()
+	{
+		JComboBox groups = new JComboBox();
+		
+		myGroups = myDatabase.getPrivateGroups(myUser);
+		
+		for (int i = 0; i < myGroups.size();i++) {
+			groups.addItem(myGroups.get(i).getGroupName());
+		}
+		
+		groups.setEnabled(false);
+		
+		return groups;
 	}
 	
 	private JPanel createTitlePanel() {
@@ -177,11 +225,11 @@ public class CreateThreadScreen extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				if (hasValidCandidates()) {
-					int ID = myDatabase.createID(myUsername);
+					int ID = myDatabase.createID(myUser.getUser());
 					// Iterates through Options and saves text
 					for (int i = 0; i < myOptions.size(); i++) {
 						String description = myOptions.get(i).getText();
-						myDatabase.addCandidate(new Candidate(description, ID, myUsername, 0));
+						myDatabase.addCandidate(new Candidate(description, ID, myUser.getUser(), 0));
 					}
 					
 					String privateStatus;
@@ -191,7 +239,13 @@ public class CreateThreadScreen extends JFrame {
 					else
 						privateStatus = "FALSE";
 					
-					myDatabase.addVotingThread(new VotingThread(myTitle.getText(), myDescription.getText(), myOptions.size(), ID,  myUsername, privateStatus));
+					VotingThread tempThread =  new VotingThread(myTitle.getText(), myDescription.getText(), myOptions.size(), ID,  myUser.getUser(), privateStatus);
+					
+					myDatabase.addVotingThread(tempThread);
+					
+					if (myPrivateButton.isEnabled()) {
+						myDatabase.addGroupThread(tempThread, myGroups.get(myGroupsComboBox.getSelectedIndex()));
+					}
 					
 					JOptionPane.showMessageDialog(null, "Thread Created.");
 					dispose();

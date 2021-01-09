@@ -50,10 +50,17 @@ public class PrivateGroupsScreen extends JFrame{
 		
 		
 		groupPanel.setLayout(grid);
-		for (JPanel title: myThreadComponents.keySet()) {
-			groupPanel.add(title);
-			groupPanel.add(myThreadComponents.get(title));
+		if (myThreadComponents.size() == 0)
+		{
+			groupPanel.add(new JLabel("No Groups Found."));
 		}
+		else {
+			for (JPanel title: myThreadComponents.keySet()) {
+				groupPanel.add(title);
+				groupPanel.add(myThreadComponents.get(title));
+			}
+		}
+
 		this.setTitle("View Public Threads");
 		
 		this.add(new JLabel("My Private Groups:"), BorderLayout.NORTH);

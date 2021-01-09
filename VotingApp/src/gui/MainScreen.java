@@ -117,7 +117,7 @@ public class MainScreen extends JFrame{
 			 * Opens Create Thread Screen
 			 */
 			public void actionPerformed(ActionEvent e) {
-				new CreateThreadScreen(myUser.getUser(), myDatabase);
+				new CreateThreadScreen(myUser, myDatabase);
 			}
 		});
 	}

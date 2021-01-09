@@ -414,8 +414,8 @@ public class DatabaseObject {
 		return groupMembers;
 	}
 	
-	public List<VotingThread> getGroupThreads(Group theGroup) {
-		List<VotingThread> groupThreads = new ArrayList<VotingThread>();
+	public List<GroupThread> getGroupThreads(Group theGroup) {
+		List<GroupThread> groupThreads = new ArrayList<GroupThread>();
 		
 		try {
 			String strSelect = "SELECT * FROM GroupThread WHERE group_name = '" + theGroup.getGroupName() + 
@@ -423,20 +423,16 @@ public class DatabaseObject {
 			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
-	        List<VotingThread> threads = this.getThreads();
-	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
 	        	
 	    		int threadID = rset.getInt("thread_ID");
 	    		String username = rset.getString("thread_creator");
+	    		String title = rset.getString("title");
 	    		
-	    		/*for(VotingThread thread : threads) {
-	    			if (threadID == thread.getThreadID() && username.equals(thread.getUsername()))
-	    				groupThreads.add(thread);  	
-	    		}*/
+	    		groupThreads.add(new GroupThread(theGroup.getGroupName(), theGroup.getAdminName(), threadID, username, title));
 	         }
 		} catch (SQLException a) {
-			JOptionPane.showMessageDialog(null, "Database Error: Insertion of vote proof failed!");
+			JOptionPane.showMessageDialog(null, "Database Error: Error retrieving GroupThreads!");
 			return null;
 		}
 		
@@ -471,7 +467,7 @@ public class DatabaseObject {
 	{
 		try {
 		String sqlAdd = "INSERT into GroupThread values ('" + theGroup.getGroupName() + "', '" + 
-						theGroup.getAdminName() + "', " + theThread.getThreadID() + ", '" + theThread.getUsername() + "')";
+						theGroup.getAdminName() + "', '" + theThread.getTitle() +"', " + theThread.getThreadID() + ", '" + theThread.getUsername() + "')";
 		
 		stmt.executeUpdate(sqlAdd);
 		} catch (SQLException a) { 
