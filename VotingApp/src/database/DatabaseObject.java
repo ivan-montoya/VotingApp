@@ -2,12 +2,10 @@ package database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -18,11 +16,8 @@ public class DatabaseObject {
 	
 	private Connection conn = null;
 	private Statement stmt = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
 	
-	public DatabaseObject() 
-	{
+	public DatabaseObject() {
 		try {		         
 			conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/votingApp?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
@@ -32,14 +27,11 @@ public class DatabaseObject {
 	    	 JOptionPane.showMessageDialog(null, "Connection did not work!");
 	         ex.printStackTrace();
 	    }
-		
 	}
 	
-	public boolean hasRegisteredUser(String theUsername)
-	{
+	public boolean hasRegisteredUser(String theUsername) {
 		try {
 			String strSelect = "SELECT * FROM RegisteredUser WHERE username = '" + theUsername + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        if (rset.next())
@@ -48,24 +40,17 @@ public class DatabaseObject {
 			return false;
 		}
 
-        
         return false;
 	}
 	
-	public RegisteredUser getRegisteredUser(String theUsername)
-	{
+	public RegisteredUser getRegisteredUser(String theUsername) {
 		RegisteredUser user = null;
 		
 		try {
 			String strSelect = "SELECT * FROM RegisteredUser WHERE username = '" + theUsername + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
-	        
-	        
 	        if (rset.next()) {   // Move the cursor to the next row, return false if no more row
-	        	
-	        	
 	    		String userName = rset.getString("username");
 	    		String email = rset.getString("email");
 	    		String password = rset.getString("password");
@@ -79,79 +64,82 @@ public class DatabaseObject {
 			return null;
 		}
 
-        
         return user;
 	}
 	
-	public void addRegisteredUser(RegisteredUser theUser)
-	{
+	public VotingThread getThread(String theUser, int theID) {
+		VotingThread thread = null;
+		
+		try {
+			String strSelect = "SELECT * FROM Thread WHERE username = '" + theUser + "' AND thread_ID = " + theID;
+	        ResultSet rset = stmt.executeQuery(strSelect);
+	        
+	        if (rset.next()) {   // Move the cursor to the next row, return false if no more rows
+	    		String username = rset.getString("username");
+	    		String title = rset.getString("title");
+	    		String description = rset.getString("description");
+	    		int numCandidates = rset.getInt("numCandidates");
+	    		String privateStatus = rset.getString("private_status");
+	    		String openStatus = rset.getString("open_status");
+	    		int ID = rset.getInt("thread_ID");
+	    		java.sql.Timestamp date = rset.getTimestamp("date_created");
+	    		
+	    		thread = new VotingThread(title, description, numCandidates, ID, username, privateStatus, openStatus, date);  		
+	         }
+		} catch (SQLException a) {
+			return null;
+		}
+		
+		return thread;
+	}
+	
+	public void addRegisteredUser(RegisteredUser theUser) {
 		try {
 		String sqlAdd = "INSERT into RegisteredUser values ('" + theUser.getName() + "', '" + theUser.getUser() + "', '" +
 				theUser.getPassword() + "', '" + theUser.getEmail() + "', '"+ theUser.getBirthday() + "', '" + 
 				theUser.getUserSince() + "', " + theUser.getNumThreads() + ")";
 		
 		stmt.executeUpdate(sqlAdd);
-		} catch (SQLException a) {
-			
-		}
+		} catch (SQLException a) { }
 	}
 	
-	public void updateRegisteredUser(RegisteredUser theUser)
-	{
+	public void updateRegisteredUser(RegisteredUser theUser) {
 		try {
-		String sqlUpdate = "Update RegisteredUser set name = '" + theUser.getName() + "', email = '" + theUser.getEmail() + 
+			String sqlUpdate = "Update RegisteredUser set name = '" + theUser.getName() + "', email = '" + theUser.getEmail() + 
 				"', birthday =  '"+ theUser.getBirthday() + "' where username = '" + theUser.getUser() + "'";
-		
-		stmt.executeUpdate(sqlUpdate);
-		} catch (SQLException a) {
-			
-		}
+			stmt.executeUpdate(sqlUpdate);
+		} catch (SQLException a) { }
 	}
 	
-	public void addVotingThread(VotingThread theThread)
-	{
+	public void addVotingThread(VotingThread theThread) {
 		try {
-		String sqlAdd = "INSERT into Thread values ('" + theThread.getTitle() + "', '" + theThread.getDescription() + "', " +
+			String sqlAdd = "INSERT into Thread values ('" + theThread.getTitle() + "', '" + theThread.getDescription() + "', " +
 				theThread.getNumCandidates() + ", " + theThread.getThreadID() + ", '" + theThread.getDate() + "', '" + 
 				theThread.getUsername() + "', '" + theThread.getPrivateStatus() + "', '" + theThread.getOpenStatus() + "')";
-		
-		stmt.executeUpdate(sqlAdd);
-		
-		} catch (SQLException a) {
-			
-		}
+			stmt.executeUpdate(sqlAdd);
+		} catch (SQLException a) { }
 	}
 	
-	public void addCandidate(Candidate theCandidate)
-	{
+	public void addCandidate(Candidate theCandidate) {
 		try {
-		String sqlAdd = "INSERT into Candidate values ('" + theCandidate.getDescription() + "', " +
+			String sqlAdd = "INSERT into Candidate values ('" + theCandidate.getDescription() + "', " +
 				theCandidate.getThreadID() + ", '" + theCandidate.getUsername() + "', "+ theCandidate.getVotes() + ")";
-		
-		stmt.executeUpdate(sqlAdd);
-		} catch (SQLException a) {
-			
-		}
+			stmt.executeUpdate(sqlAdd);
+		} catch (SQLException a) { }
 	}
 	
-	public int createID(String username)
-	{
+	public int createID(String username) {
 		try {
-		String sqlSelect = "SELECT id FROM (SELECT username, MAX(thread_ID) id FROM Thread Group By username) AS a WHERE username = '" + username + "'";
-		
-        ResultSet rset = stmt.executeQuery(sqlSelect);
+			String sqlSelect = "SELECT id FROM (SELECT username, MAX(thread_ID) id FROM Thread Group By username) AS a WHERE username = '" + username + "'";
+			ResultSet rset = stmt.executeQuery(sqlSelect);
         
-        if (rset.next()) {   // Move the cursor to the next row, return false if no more row
-        	
-        	
-    		int id = rset.getInt("id");
+			if (rset.next()) {   // Move the cursor to the next row, return false if no more row
+				int id = rset.getInt("id");
     		
-    		return id + 1;
-        } else {
-        	return 0;
-        }
-		} catch (SQLException a) {
-		}
+				return id + 1;
+			} else
+				return 0;
+		} catch (SQLException a) { }
 		
 		return 0;
 	}
@@ -161,13 +149,9 @@ public class DatabaseObject {
 		
 		try {
 			String strSelect = "SELECT * FROM Thread";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
-	        
-	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
-	        	
 	    		String username = rset.getString("username");
 	    		String title = rset.getString("title");
 	    		String description = rset.getString("description");
@@ -191,14 +175,9 @@ public class DatabaseObject {
 		
 		try {
 			String strSelect = "SELECT * FROM Thread WHERE username = '" + theUser.getUser() + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
-	        
-	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
-	        	
-	        	
 	    		String username = rset.getString("username");
 	    		String title = rset.getString("title");
 	    		String description = rset.getString("description");
@@ -209,8 +188,6 @@ public class DatabaseObject {
 	    		java.sql.Timestamp date = rset.getTimestamp("date_created");
 	    		
 	    		threads.add(new VotingThread(title, description, numCandidates, ID, username, privateStatus, openStatus, date));
-	    		
-	    		
 	         }
 		} catch (SQLException a) {
 			return null;
@@ -219,14 +196,12 @@ public class DatabaseObject {
 		return threads;
 	}
 	
-	public List<Candidate> getThreadCandidates(VotingThread theThread)
-	{
+	public List<Candidate> getThreadCandidates(VotingThread theThread) {
 		List<Candidate> candidates = new ArrayList<Candidate>();
 		
 		try {
 			String strSelect = "SELECT * FROM Candidate WHERE Thread_ID = " + theThread.getThreadID() + 
 					" AND username = '" + theThread.getUsername() + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
@@ -240,13 +215,11 @@ public class DatabaseObject {
 		} catch (SQLException a) {
 			return null;
 		}
-	
-	return candidates;
-	
+		
+		return candidates;
 	}
 	
-	public void updateCandidate(String theCandidate, VotingThread theThread)
-	{
+	public void updateCandidate(String theCandidate, VotingThread theThread) {
 		try {
 		String sqlUpdate = "Update Candidate set votes = votes + 1 WHERE Candidate.thread_ID = " + theThread.getThreadID() + 
 				" AND Candidate.username = '" + theThread.getUsername() + "' AND description = '" + theCandidate + "'";
@@ -257,8 +230,7 @@ public class DatabaseObject {
 		}
 	}
 	
-	public boolean checkIfUserVoted(RegisteredUser theUser, VotingThread theThread)
-	{	
+	public boolean checkIfUserVoted(RegisteredUser theUser, VotingThread theThread) {	
 		try {
 			String strSelect = "SELECT * FROM Voted WHERE voter = '" + theUser.getUser() + "' AND thread_ID = " +
 		theThread.getThreadID() + " AND creator = '" + theThread.getUsername() + "'";
@@ -280,13 +252,11 @@ public class DatabaseObject {
 		return false;
 	}
 	
-	public void addVote(RegisteredUser theUser, VotingThread theThread)
-	{
+	public void addVote(RegisteredUser theUser, VotingThread theThread) {
 		try {
-		String sqlAdd = "INSERT into Voted values ('" + theUser.getUser() + "', '" + 
+			String sqlAdd = "INSERT into Voted values ('" + theUser.getUser() + "', '" + 
 						theThread.getUsername() + "', " + theThread.getThreadID() + ")";
-		
-		stmt.executeUpdate(sqlAdd);
+			stmt.executeUpdate(sqlAdd);
 		} catch (SQLException a) { 
 			JOptionPane.showMessageDialog(null, "Database Error: Insertion of vote proof failed!");
 		}
@@ -296,7 +266,6 @@ public class DatabaseObject {
 		try {
 			String strSelect = "SELECT * FROM Thread WHERE username = '" + theThread.getUsername() + 
 					"' AND thread_ID = " + theThread.getThreadID();
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        if (rset.next()) {   // Move the cursor to the next row, return false if no more row
@@ -316,7 +285,6 @@ public class DatabaseObject {
 		try {
 			String strSelect = "SELECT * FROM Thread WHERE username = '" + theThread.getUsername() + 
 					"' AND thread_ID = " + theThread.getThreadID();
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        if (rset.next()) {   // Move the cursor to the next row, return false if no more row
@@ -332,13 +300,12 @@ public class DatabaseObject {
 		return false;	
 	}
 	
-	public void closeVotingOnThread(VotingThread theThread)
-	{
+	public void closeVotingOnThread(VotingThread theThread) {
 		try {
-		String sqlUpdate = "Update Thread set open_status = 'FALSE' WHERE Thread.thread_ID = " + theThread.getThreadID() + 
+			String sqlUpdate = "Update Thread set open_status = 'FALSE' WHERE Thread.thread_ID = " + theThread.getThreadID() + 
 				" AND Thread.username = '" + theThread.getUsername() + "'";
-		
-		stmt.executeUpdate(sqlUpdate);
+			
+			stmt.executeUpdate(sqlUpdate);
 		} catch (SQLException a) {
 			JOptionPane.showMessageDialog(null, "Database Error: Update to thread failed!");
 		}
@@ -349,11 +316,9 @@ public class DatabaseObject {
 		
 		try {
 			String strSelect = "SELECT * FROM GroupMember WHERE  username = '" + user.getUser() + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
-	        	
 	    		String groupName = rset.getString("group_name");
 	    		String groupCreator = rset.getString("group_creator");
 	    		
@@ -372,7 +337,6 @@ public class DatabaseObject {
 		try {
 			String strSelect = "SELECT * FROM GroupMember WHERE  group_name = '" + theGroup.getGroupName() + 
 					"' AND group_creator = '" + theGroup.getAdminName() + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
@@ -396,11 +360,9 @@ public class DatabaseObject {
 		try {
 			String strSelect = "SELECT * FROM GroupMember WHERE  group_name = '" + theGroup.getGroupName() + 
 					"' AND group_creator = '" + theGroup.getAdminName() + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
-	        	
 	    		String groupName = rset.getString("group_name");
 	    		String groupCreator = rset.getString("group_creator");
 	    		String username = rset.getString("username");
@@ -420,11 +382,9 @@ public class DatabaseObject {
 		try {
 			String strSelect = "SELECT * FROM GroupThread WHERE group_name = '" + theGroup.getGroupName() + 
 					"' AND group_creator = '" + theGroup.getAdminName() + "'";
-			
 	        ResultSet rset = stmt.executeQuery(strSelect);
 	        
 	        while (rset.next()) {   // Move the cursor to the next row, return false if no more row
-	        	
 	    		int threadID = rset.getInt("thread_ID");
 	    		String username = rset.getString("thread_creator");
 	    		String title = rset.getString("title");
@@ -439,40 +399,71 @@ public class DatabaseObject {
 		return groupThreads;
 	}
 	
-	public void addGroup(Group theGroup)
-	{
+	public void addGroup(Group theGroup) {
 		try {
-		String sqlAdd = "INSERT into PrivateGroup values ('" + theGroup.getGroupName() + "', '" + 
+			String sqlAdd = "INSERT into PrivateGroup values ('" + theGroup.getGroupName() + "', '" + 
 						theGroup.getAdminName() + "')";
-		
-		stmt.executeUpdate(sqlAdd);
+			stmt.executeUpdate(sqlAdd);
 		} catch (SQLException a) { 
 			JOptionPane.showMessageDialog(null, "Database Error: Insertion of vote proof failed!");
 		}
 	}
 	
-	public void addGroupMember(GroupMember theMember)
-	{
+	public void addGroupMember(GroupMember theMember) {
 		try {
-		String sqlAdd = "INSERT into GroupMember values ('" + theMember.getGroupName() + "', '" + 
+			String sqlAdd = "INSERT into GroupMember values ('" + theMember.getGroupName() + "', '" + 
 						theMember.getGroupCreator() + "', '" + theMember.getUsername() + "')";
-		
-		stmt.executeUpdate(sqlAdd);
+			stmt.executeUpdate(sqlAdd);
 		} catch (SQLException a) { 
 			JOptionPane.showMessageDialog(null, "Database Error: Insertion of vote proof failed!");
 		}
 	}
 	
-	public void addGroupThread(VotingThread theThread, Group theGroup)
-	{
+	public void addGroupThread(VotingThread theThread, Group theGroup) {
 		try {
-		String sqlAdd = "INSERT into GroupThread values ('" + theGroup.getGroupName() + "', '" + 
+			String sqlAdd = "INSERT into GroupThread values ('" + theGroup.getGroupName() + "', '" + 
 						theGroup.getAdminName() + "', '" + theThread.getTitle() +"', " + theThread.getThreadID() + ", '" + theThread.getUsername() + "')";
-		
-		stmt.executeUpdate(sqlAdd);
+			stmt.executeUpdate(sqlAdd);
 		} catch (SQLException a) { 
 			JOptionPane.showMessageDialog(null, "Database Error: Insertion of group thread proof failed!");
 		}
 	}
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

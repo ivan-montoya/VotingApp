@@ -6,9 +6,7 @@ public class Candidate {
 	public int myVotes;
 	private String myUsername;
 	
-	
-	public Candidate(String description, int thread_ID, String username, int votes) 
-	{
+	public Candidate(String description, int thread_ID, String username, int votes) {
 		this.myDescription = description;
 		this.myThread_ID = thread_ID;
 		this.myVotes = votes;
@@ -16,23 +14,19 @@ public class Candidate {
 		
 	}
 	
-	public String getDescription()
-	{
+	public String getDescription() {
 		return this.myDescription;
 	}
 	
-	public int getThreadID()
-	{
+	public int getThreadID() {
 		return this.myThread_ID;
 	}
 	
-	public String getUsername()
-	{
+	public String getUsername() {
 		return this.myUsername;
 	}
 	
-	public int getVotes()
-	{
+	public int getVotes() {
 		return this.myVotes;
 	}
 

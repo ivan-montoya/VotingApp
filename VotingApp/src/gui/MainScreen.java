@@ -9,10 +9,13 @@ import database.DatabaseObject;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-//import java.awt.GridLayout;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,49 +45,47 @@ public class MainScreen extends JFrame{
 		myUser = user;
 		myDatabase = database;
 		myUsername = new JLabel("User: " + user.getUser());
-		myImage = new ImageIcon("Images/thread.jpg");
-		setCreateButton();
-		setViewButton();
-		setLogOutButton();
-		start();
+		myImage = new ImageIcon("Images/signature-altered.png");
+		
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
-	/**
-	 * Method used to set up components inside the JFrame.
-	 */
-	public void start() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
+	private void constructJFrame() {
 		JPanel topPanel = new JPanel();
+		JLabel centerLabel = new JLabel();
+		JPanel bottomPanel = new JPanel();
+		Image centerImage = getScaledImage(myImage.getImage(), 540, 225);
 		
-		// Adds components to the JFrame
-		//GridLayout grid = new GridLayout(2, 2, 120, 0);
-		//this.setLayout(grid);
+		centerLabel.setIcon(new ImageIcon(centerImage));
+		
+		this.setLogOutButton();
+		this.setViewButton();
+		this.setCreateButton();
+
 		topPanel.add(viewProfileButton());
 		topPanel.add(myUsername);
 		topPanel.add(myLogOutButton);
 		
-		JLabel centerLabel = new JLabel(myImage);
-		
-		JPanel bottomPanel = new JPanel();
-		
 		bottomPanel.add(myCreateButton);
 		bottomPanel.add(myViewButton);
-		bottomPanel.add(createPrivateGroupsButton());
-		bottomPanel.add(createViewMyThreadsButton());
+		bottomPanel.add(privateGroupsButton());
+		bottomPanel.add(viewMyThreadsButton());
 		
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(centerLabel, BorderLayout.CENTER);
 		this.add(bottomPanel, BorderLayout.SOUTH);
-		
-		this.setTitle("Main");
-		
-		// Sets dimensions and location
-		this.pack();
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Main");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setResizable(false);
         this.setVisible(true);
 	}
@@ -145,7 +146,6 @@ public class MainScreen extends JFrame{
 	 */
 	private void setLogOutButton() {
 		myLogOutButton = new JButton("Log out");
-		
 		myLogOutButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
@@ -155,9 +155,8 @@ public class MainScreen extends JFrame{
 		});
 	}
 	
-	private JButton createViewMyThreadsButton() {
+	private JButton viewMyThreadsButton() {
 		JButton viewMyThreadsButton = new JButton("View My Threads");
-		
 		viewMyThreadsButton.addActionListener( new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
@@ -168,9 +167,8 @@ public class MainScreen extends JFrame{
 		return viewMyThreadsButton;
 	}
 	
-	private JButton createPrivateGroupsButton() {
+	private JButton privateGroupsButton() {
 		JButton privateGroupsButton = new JButton("View My Private Groups");
-		
 		privateGroupsButton.addActionListener( new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
@@ -179,5 +177,16 @@ public class MainScreen extends JFrame{
 		});
 		
 		return privateGroupsButton;
+	}
+	
+	private Image getScaledImage(Image srcImg, int w, int h) {
+	    BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2 = resizedImg.createGraphics();
+
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(srcImg, 0, 0, w, h, null);
+	    g2.dispose();
+
+	    return resizedImg;
 	}
 }

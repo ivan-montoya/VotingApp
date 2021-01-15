@@ -1,8 +1,6 @@
 package objects;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class VotingThread
 {
@@ -15,8 +13,7 @@ public class VotingThread
 	private String myOpenStatus;
 	private String myPrivateStatus;
 	
-	public VotingThread(String title, String description, int numCandidates, int ID, String username, String privateStatus)
-	{
+	public VotingThread(String title, String description, int numCandidates, int ID, String username, String privateStatus) {
 		this.myTitle = title;
 		this.myDescription = description;
 		this.myNumCandidates = numCandidates;
@@ -29,8 +26,7 @@ public class VotingThread
 	}
 	
 	public VotingThread(String title, String description, int numCandidates, int ID, String username, 
-			String privateStatus, String openStatus, java.sql.Timestamp date)
-	{
+			String privateStatus, String openStatus, java.sql.Timestamp date) {
 		this.myTitle = title;
 		this.myDescription = description;
 		this.myNumCandidates = numCandidates;
@@ -41,43 +37,35 @@ public class VotingThread
 		this.myDate = date;
 	}
 	
-	public String getTitle()
-	{
+	public String getTitle() {
 		return this.myTitle;
 	}
 	
-	public int getNumCandidates()
-	{
+	public int getNumCandidates() {
 		return this.myNumCandidates;
 	}
 	
-	public String getDescription()
-	{
+	public String getDescription() {
 		return this.myDescription;
 	}
 	
-	public String getUsername()
-	{
+	public String getUsername() {
 		return this.myUsername;
 	}
 	
-	public String getOpenStatus()
-	{
+	public String getOpenStatus() {
 		return this.myOpenStatus;
 	}
 	
-	public String getPrivateStatus()
-	{
+	public String getPrivateStatus() {
 		return this.myPrivateStatus;
 	}
 	
-	public int getThreadID()
-	{
+	public int getThreadID() {
 		return this.myThread_ID;
 	}
 	
-	public java.sql.Timestamp getDate()
-	{
+	public java.sql.Timestamp getDate() {
 		return this.myDate;
 	}
 

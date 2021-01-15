@@ -2,25 +2,22 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import database.DatabaseObject;
-import objects.Candidate;
 import objects.Group;
 import objects.GroupMember;
 import objects.GroupThread;
@@ -29,11 +26,14 @@ import objects.VotingThread;
 
 public class CurrentGroupScreen extends JFrame{
 	
+	private static final long serialVersionUID = -3628637307657080752L;
 	private JTable myFriendsTable;
+	private DefaultTableModel myFriendsModel;
 	private JTable myThreadsTable;
 	private Group myGroup;
 	private RegisteredUser myUser;
 	private DatabaseObject myDatabase;
+	private List<GroupThread> myThreads;
 	
 	public CurrentGroupScreen(DatabaseObject theDatabase, Group theGroup, RegisteredUser theUser)
 	{
@@ -41,7 +41,8 @@ public class CurrentGroupScreen extends JFrame{
 		myGroup = theGroup;
 		myUser = theUser;
 		
-		constructJFrame();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
 	private void constructJFrame() {
@@ -49,84 +50,87 @@ public class CurrentGroupScreen extends JFrame{
 		myThreadsTable = createThreadsTable();
 		
 		JPanel tablePanel = new JPanel();
-		
-		tablePanel.add(myFriendsTable);
-		tablePanel.add(myThreadsTable);
+		tablePanel.add(new JScrollPane(myFriendsTable));
+		tablePanel.add(new JScrollPane(myThreadsTable));
 		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.add(createAddMemberButton(myGroup));
+		buttonPanel.add(createAddMemberButton());
 		buttonPanel.add(createViewMemberButton(myGroup));
 		buttonPanel.add(createViewGroupThreadButton(myGroup));
 		
 		this.add(new JLabel("Group Name: " + myGroup.getGroupName()), BorderLayout.NORTH);
 		this.add(tablePanel, BorderLayout.CENTER);
 		this.add(buttonPanel, BorderLayout.SOUTH);
-		this.pack();
+
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("Private Group");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
-	private JTable createFriendsTable()
-	{
-		DefaultTableModel tableModel = new DefaultTableModel();
-		JTable tempTable = new JTable(tableModel);
-		
+	private JTable createFriendsTable() {
+		myFriendsModel = new DefaultTableModel();
+		JTable friendsTable = new JTable(myFriendsModel);
 		List<GroupMember> members = myDatabase.getGroupMembers(myGroup);
 		
-		tableModel.addColumn("Group Members");
+		myFriendsModel.addColumn("Group Members");
 		
 		for (GroupMember member: members) {
-			tableModel.insertRow(0, new Object[] {member.getUsername()});
+			myFriendsModel.insertRow(0, new Object[] {member.getUsername()});
 		}
 		
-		return tempTable;
+		return friendsTable;
 	}
 	
 	private JTable createThreadsTable()
 	{
-		DefaultTableModel tableModel = new DefaultTableModel();
-		JTable tempTable = new JTable(tableModel);
+		DefaultTableModel threadsTableModel = new DefaultTableModel();
+		JTable threadsTable = new JTable(threadsTableModel);
+		myThreads = myDatabase.getGroupThreads(myGroup);
 		
-		List<GroupThread> threads = myDatabase.getGroupThreads(myGroup);
+		threadsTableModel.addColumn("Thread Name");
+		threadsTableModel.addColumn("Thread Creator");
 		
-		tableModel.addColumn("Thread Name");
-		tableModel.addColumn("Thread Creator");
-		
-		if (threads.size() == 0) {
-			tableModel.insertRow(0, new Object[] {"To display", " "});
-			tableModel.insertRow(0, new Object[] {"No Threads", " "});
+		if (myThreads.size() == 0) {
+			threadsTableModel.insertRow(0, new Object[] {"To display", " "});
+			threadsTableModel.insertRow(0, new Object[] {"No Threads", " "});
 			
 		} else {
-			for (GroupThread thread: threads) {
-				tableModel.insertRow(0, new Object[] {thread.getTitle(), thread.getThreadCreator()});
+			for (GroupThread thread: myThreads) {
+				threadsTableModel.insertRow(0, new Object[] {thread.getTitle(), thread.getThreadCreator()});
 			}
 		}
 		
-		return tempTable;
+		return threadsTable;
 	}
 	
-	private JButton createAddMemberButton(Group theGroup) {
-		JButton tempButton = new JButton("Add Member");
-		tempButton.addActionListener(addMemberButtonAction(theGroup));
+	private JButton createAddMemberButton() {
+		JButton addMemberButton = new JButton("Add Member");
+		addMemberButton.addActionListener(addMemberButtonAction());
 		
-		return tempButton;
+		return addMemberButton;
 	}
 	
-	private ActionListener addMemberButtonAction(Group theGroup) {
+	private ActionListener addMemberButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//new CurrentGroupScreen(myDatabase, theGroup,  myUser);
+				new AddMemberScreen(myFriendsModel, myDatabase, myGroup);
 			}
 		};
 	}
 	
 	private JButton createViewMemberButton(Group theGroup) {
-		JButton tempButton = new JButton("View Member Profile");
-		tempButton.addActionListener(viewMemberButtonAction());
+		JButton viewMemberButton = new JButton("View Member Profile");
+		viewMemberButton.addActionListener(viewMemberButtonAction());
 		
-		return tempButton;
+		return viewMemberButton;
 	}
 	
 	private ActionListener viewMemberButtonAction() {
@@ -148,17 +152,26 @@ public class CurrentGroupScreen extends JFrame{
 	}
 	
 	private JButton createViewGroupThreadButton(Group theGroup) {
-		JButton tempButton = new JButton("View Group Thread");
-		tempButton.addActionListener(viewGroupThreadButtonAction(theGroup));
+		JButton viewGroupThreadButton = new JButton("View Group Thread");
+		viewGroupThreadButton.addActionListener(viewGroupThreadButtonAction(theGroup));
 		
-		return tempButton;
+		return viewGroupThreadButton;
 	}
 	
 	private ActionListener viewGroupThreadButtonAction(Group theGroup) {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//new CurrentGroupScreen(myDatabase, theGroup,  myUser);
+				int cell = myThreadsTable.getSelectedRow();
+				
+				if (cell == -1) {
+					JOptionPane.showMessageDialog(null, "Must select thread to view!");
+				} else {
+					VotingThread tempThread = myDatabase.getThread(myThreads.get(cell).getThreadCreator(), myThreads.get(cell).getThreadID());
+					new CurrentThreadScreen(tempThread,myDatabase,  myUser);
+				}
 			}
 		};
 	}
 }
+
+

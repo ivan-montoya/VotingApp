@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,9 +22,9 @@ import objects.RegisteredUser;
 import objects.VotingThread;
 
 public class CurrentUserThreadScreen extends JFrame{
-	
-	VotingThread myThread;
-	
+
+	private static final long serialVersionUID = 2840786334510556222L;
+	private VotingThread myThread;
 	private DatabaseObject myDatabase;
 	private List<JRadioButton> myCandidates;
 	private RegisteredUser myUser;
@@ -66,7 +67,9 @@ public class CurrentUserThreadScreen extends JFrame{
 	
 	private void setupScreenOptions() {
 		this.setTitle(myThread.getTitle());
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
 		
+		this.setIconImage(titleImage.getImage());
 		this.pack();
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);

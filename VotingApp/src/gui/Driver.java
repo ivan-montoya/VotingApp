@@ -4,16 +4,11 @@
 package gui;
 
 import java.awt.EventQueue;
-import java.sql.Connection;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
-/**
- * @author Ivan Montoya
- *
- */
 public class Driver {
     /**
      * Overrides default public constructor.

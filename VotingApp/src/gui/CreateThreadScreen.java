@@ -14,12 +14,12 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -31,20 +31,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class CreateThreadScreen extends JFrame {
-	
-	/* READ THIS! IMPORTANT
-	 * 
-	 * This class should save the information in
-	 * the JTextFields inside a new Thread then
-	 * pass that Thread to MainScreen.
-	 */
+
+	private static final long serialVersionUID = -8627110857885194937L;
 	private JTextField myTitle;
 	private JTextArea myDescription;
 	
 	private JPanel myPanel;
-	private JButton myCreateButton;
-	
-	private int myOptionsAmount;
 	private List<JTextField> myOptions;
 	private JRadioButton myPrivateButton;
 	private JRadioButton myPublicButton;
@@ -61,53 +53,51 @@ public class CreateThreadScreen extends JFrame {
 		myUser = username;
 		myPanel = new JPanel();
 		myOptions = new LinkedList<JTextField>();
-		createJFrame();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
-	/**
-	 * Sets up and starts JFrame Window.
-	 */
-	private void createJFrame() {
-		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
-		
+	private void constructJFrame() {
 		JPanel titlePanel = createTitlePanel();
-		myPanel.add(titlePanel);
-		
 		JPanel descriptionPanel = createDescriptionPanel();
-		myPanel.add(descriptionPanel);
-		
 		JPanel privatePanel = createPrivatePanel();
-		myPanel.add(privatePanel);
-		
-		myGroupsComboBox = createGroupsBox();
-		myPanel.add(myGroupsComboBox);
+		JTextField optionField = new JTextField(25);
 		
 		JPanel optionPanel = new JPanel(new FlowLayout());
-		
-		JTextField tempField = new JTextField(25);
-		myOptions.add(tempField);
 		optionPanel.add(new JLabel("Option 1:"));
-		optionPanel.add(tempField);
-		myPanel.add(optionPanel);
+		optionPanel.add(optionField);
 		
-		// More Components
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(1, 2));
 		buttonPanel.add(addOptionButton());
 		buttonPanel.add(addCreateThreadButton());
+		
+		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+		myPanel.add(titlePanel);
+		myPanel.add(descriptionPanel);
+		myPanel.add(privatePanel);
+		myGroupsComboBox = createGroupsBox();
+		myPanel.add(myGroupsComboBox);
+		myOptions.add(optionField);
+		myPanel.add(optionPanel);
+		
 		this.add(myPanel, BorderLayout.CENTER);
 		this.add(buttonPanel, BorderLayout.SOUTH);
-		this.setTitle("Create Thread");
-		
-		this.pack();
+
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("Create Thread");
+		this.pack();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2); 
         this.setVisible(true);
 	}
 	
-	private JPanel createPrivatePanel()
-	{
+	private JPanel createPrivatePanel() {
 		JPanel privatePanel = new JPanel();
 		myPublicButton = new JRadioButton("Public");
 		myPrivateButton = new JRadioButton("Private");
@@ -128,8 +118,7 @@ public class CreateThreadScreen extends JFrame {
 		return privatePanel;
 	}
 	
-	private ActionListener publicButtonAction()
-	{
+	private ActionListener publicButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (myPublicButton.isEnabled()) {
@@ -139,8 +128,7 @@ public class CreateThreadScreen extends JFrame {
 		};
 	}
 	
-	private ActionListener privateButtonAction()
-	{
+	private ActionListener privateButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (myPrivateButton.isEnabled()) {
@@ -150,8 +138,7 @@ public class CreateThreadScreen extends JFrame {
 		};
 	}
 	
-	private JComboBox createGroupsBox()
-	{
+	private JComboBox createGroupsBox() {
 		JComboBox groups = new JComboBox();
 		
 		myGroups = myDatabase.getPrivateGroups(myUser);
@@ -173,6 +160,7 @@ public class CreateThreadScreen extends JFrame {
 		
 		return titlePanel;
 	}
+	
 	private JPanel createDescriptionPanel() {
 		JPanel descriptionPanel = new JPanel();
 		myDescription = new JTextArea(2, 35);
@@ -181,10 +169,7 @@ public class CreateThreadScreen extends JFrame {
 		
 		return descriptionPanel;
 	}
-	
-	/**
-	 * Sets necessary elements for the Add option button.
-	 */
+
 	public JButton addOptionButton() {
 		JButton addOptionButton = new JButton("Add Option");
 		addOptionButton.addActionListener(addOptionAction());
@@ -210,9 +195,6 @@ public class CreateThreadScreen extends JFrame {
 		};
 	}
 	
-	/**
-	 * Sets up Create Thread button.
-	 */
 	public JButton addCreateThreadButton() {
 		JButton createButton = new JButton("Create Thread");
 		createButton.addActionListener(createThreadAction());
@@ -253,7 +235,6 @@ public class CreateThreadScreen extends JFrame {
 				else {
 					JOptionPane.showMessageDialog(null, "Error: Must have distinct options!");
 				}
-
 			}
 		};
 	}

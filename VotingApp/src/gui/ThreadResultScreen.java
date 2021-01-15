@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,35 +22,32 @@ import objects.Candidate;
 public class ThreadResultScreen extends JFrame {
 	
 	private static final long serialVersionUID = 7897541678794270529L;
-	/**Used to create components for each Thread*/
 	private Map<JPanel, JProgressBar> myThreadComponents;
 	private DatabaseObject myDatabase;
 	private float myTotalVotes;
 	private List<Candidate> myCandidates;
 	
 	public ThreadResultScreen(DatabaseObject theDatabase, VotingThread theThread) {
+		int tempTotal = 0;
 		
 		myDatabase = theDatabase;
 		myThreadComponents = new HashMap<JPanel, JProgressBar>();
-		
 		myCandidates = myDatabase.getThreadCandidates(theThread);
-		
-		int tempTotal = 0;
 		
 		for (int i = 0; i < myCandidates.size(); i++)
 			tempTotal += myCandidates.get(i).getVotes();
 		
 		myTotalVotes = (float) tempTotal;
 		
-		setThreads();
-		
-		start();
+		this.setCandidates();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
 	/**
 	 * Sets up components for the JFrame.
 	 */
-	private void start() {
+	private void constructJFrame() {
 		
 		
 		GridLayout grid = new GridLayout(myThreadComponents.size() + 1, 2, 5, 10);
@@ -64,49 +62,44 @@ public class ThreadResultScreen extends JFrame {
 			this.add(title);
 			this.add(myThreadComponents.get(title));
 		}
-		this.setTitle("View Public Threads");
-		
 
-		
-		this.pack();
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("Thread Results");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
-	/**
-	 * Uses a List of threads to create JLabels and JButtons
-	 * for each thread.
-	 */
-	private void setThreads() {
+	private void setCandidates() {
 		for (Candidate candidate: myCandidates) {
-			JPanel threadPanel = new JPanel();
-			JLabel tempLabel = new JLabel("Candidate:    " + candidate.getDescription());
-			JLabel tempLabel2 = new JLabel("Votes:        " + candidate.getVotes());
+			JPanel candidatePanel = new JPanel();
+			JLabel candidateLabel = new JLabel("Candidate:    " + candidate.getDescription());
+			JLabel votesLabel = new JLabel("Votes:        " + candidate.getVotes());
 			
-			threadPanel.setLayout(new GridLayout(2, 1));
+			candidatePanel.setLayout(new GridLayout(2, 1));
+			candidatePanel.add(candidateLabel);
+			candidatePanel.add(votesLabel);
+			candidatePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			
-			threadPanel.add(tempLabel);
-			threadPanel.add(tempLabel2);
-			
-			threadPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			
-			myThreadComponents.put(threadPanel, createProgressBar(candidate));
+			myThreadComponents.put(candidatePanel, createProgressBar(candidate));
 		}
 	}
 	
 	private JProgressBar createProgressBar(Candidate theCandidate) {
-		JProgressBar tempBar = new JProgressBar(0, (int) myTotalVotes);
-		tempBar.setValue(theCandidate.getVotes());
-		
+		JProgressBar progressBar = new JProgressBar(0, (int) myTotalVotes);
 		String percentage = Float.toString(Math.round((float) theCandidate.getVotes() / myTotalVotes * 10000) / 100.0f);
 		
-		tempBar.setStringPainted(true);
+		progressBar.setValue(theCandidate.getVotes());
+		progressBar.setStringPainted(true);
+		progressBar.setString(percentage + "%");
 		
-		tempBar.setString(percentage + "%");
-		
-		return tempBar;
+		return progressBar;
 	}
 
 }

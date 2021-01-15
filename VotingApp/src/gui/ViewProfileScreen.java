@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,7 +22,6 @@ public class ViewProfileScreen extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private RegisteredUser myUser;
-	
 	private JTextField myUsernameField;
 	private JTextField myNameField;
 	private JTextField myEmailField;
@@ -38,6 +38,16 @@ public class ViewProfileScreen extends JFrame {
 		myDatabase = theDatabase;
 		myEditing = false;
 		myUser = user;
+		
+		this.constructJFrame();
+		this.setJFrameDetails();
+	}
+	
+	private void constructJFrame() {
+		JPanel userInfoPanel = new JPanel();
+		GridLayout grid = new GridLayout(6, 2);
+		JTextField userSinceField = new JTextField(myUser.getUserSince().toString());
+		
 		myUsernameField = new JTextField();
 		myNameField = new JTextField();
 		myEmailField = new JTextField();
@@ -45,10 +55,8 @@ public class ViewProfileScreen extends JFrame {
 		
 		myEdit = new JButton("Edit");
 		myExit = new JButton("Exit");
-		
 		myEdit.addActionListener(editListener());
 		myExit.addActionListener(exitListener());
-		this.add(new JLabel("Your Profile"), BorderLayout.NORTH);
 		
 		myUsernameField.setText(myUser.getUser());
 		myNameField.setText(myUser.getName());
@@ -59,12 +67,9 @@ public class ViewProfileScreen extends JFrame {
 		myNameField.setEditable(false);
 		myEmailField.setEditable(false);
 		myBirthdayField.setEditable(false);
-		
-		JTextField userSinceField = new JTextField(user.getUserSince().toString());
+
 		userSinceField.setEditable(false);
 		
-		JPanel userInfoPanel = new JPanel();
-		GridLayout grid = new GridLayout(6, 2);
 		userInfoPanel.setLayout(grid);
 		userInfoPanel.add(new JLabel("Username:"));
 		userInfoPanel.add(myUsernameField);
@@ -79,10 +84,16 @@ public class ViewProfileScreen extends JFrame {
 		userInfoPanel.add(myEdit);
 		userInfoPanel.add(myExit);
 		
+		this.add(new JLabel("Your Profile"), BorderLayout.NORTH);
 		this.add(userInfoPanel, BorderLayout.CENTER);
-		
-		this.pack();
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
         this.setVisible(true);

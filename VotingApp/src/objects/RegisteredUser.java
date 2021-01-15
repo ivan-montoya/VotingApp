@@ -13,8 +13,7 @@ public class RegisteredUser
 	private java.sql.Timestamp myUserSince;
 	private int numThreads;
 	
-	public RegisteredUser(String userName, String email, String password, String name, String birthday, int numThreads)
-	{
+	public RegisteredUser(String userName, String email, String password, String name, String birthday, int numThreads) {
 		this.userName = userName;
 		this.email = email;
 		this.password = password;
@@ -25,8 +24,7 @@ public class RegisteredUser
 		
 	}
 	
-	public RegisteredUser(String userName, String email, String password, String name, String birthday, int numThreads, java.sql.Timestamp userSince)
-	{
+	public RegisteredUser(String userName, String email, String password, String name, String birthday, int numThreads, java.sql.Timestamp userSince) {
 		this.userName = userName;
 		this.email = email;
 		this.password = password;
@@ -37,8 +35,7 @@ public class RegisteredUser
 		
 	}
 	
-	public void setUserName(String userName)
-	{
+	public void setUserName(String userName) {
 		this.userName = userName;
 	}
 	
@@ -46,8 +43,7 @@ public class RegisteredUser
 		return this.userName;
 	}
 	
-	public void setEmail(String email)
-	{
+	public void setEmail(String email) {
 		this.email = email;
 	}
 	
@@ -55,8 +51,7 @@ public class RegisteredUser
 		return this.email;
 	}
 	
-	public void setPassword(String password)
-	{
+	public void setPassword(String password) {
 		this.password = password;
 	}
 	
@@ -64,8 +59,7 @@ public class RegisteredUser
 		return this.password;
 	}
 	
-	public void setName(String name)
-	{
+	public void setName(String name) {
 		this.name = name;
 	}
 	
@@ -73,8 +67,7 @@ public class RegisteredUser
 		return this.name;
 	}
 	
-	public void setBirthday(String birthday)
-	{
+	public void setBirthday(String birthday) {
 		this.birthday = birthday;
 	}
 	
@@ -82,18 +75,15 @@ public class RegisteredUser
 		return this.birthday;
 	}
 	
-	public int getNumThreads()
-	{
+	public int getNumThreads() {
 		return this.numThreads;
 	}
 	
-	public void setNumThreads(int numThreads)
-	{
+	public void setNumThreads(int numThreads) {
 		this.numThreads = numThreads;
 	}
 	
-	public java.sql.Timestamp getUserSince()
-	{
+	public java.sql.Timestamp getUserSince() {
 		return this.myUserSince;
 	}
 	

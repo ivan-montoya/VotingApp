@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,11 +20,10 @@ import javax.swing.JPanel;
 import database.DatabaseObject;
 import objects.Group;
 import objects.RegisteredUser;
-import objects.VotingThread;
 
 public class PrivateGroupsScreen extends JFrame{
 	
-	/**Used to create components for each Thread*/
+	private static final long serialVersionUID = 838303835754789248L;
 	private Map<JPanel, JButton> myThreadComponents;
 	private DatabaseObject myDatabase;
 	private RegisteredUser myUser;
@@ -34,26 +34,18 @@ public class PrivateGroupsScreen extends JFrame{
 		myThreadComponents = new HashMap<JPanel, JButton>();
 		myUser = theUser;
 		
-		setThreads();
-		
-		start();
+		this.setGroups();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
-	/**
-	 * Sets up components for the JFrame.
-	 */
-	private void start() {
-		
-		
-		JPanel groupPanel = new JPanel();
+	private void constructJFrame() {
 		GridLayout grid = new GridLayout(myThreadComponents.size(), 2, 5, 10);
-		
-		
+		JPanel groupPanel = new JPanel();
 		groupPanel.setLayout(grid);
+		
 		if (myThreadComponents.size() == 0)
-		{
-			groupPanel.add(new JLabel("No Groups Found."));
-		}
+			groupPanel.add(new JLabel("No Groups Found."));	
 		else {
 			for (JPanel title: myThreadComponents.keySet()) {
 				groupPanel.add(title);
@@ -61,67 +53,65 @@ public class PrivateGroupsScreen extends JFrame{
 			}
 		}
 
-		this.setTitle("View Public Threads");
-		
 		this.add(new JLabel("My Private Groups:"), BorderLayout.NORTH);
 		this.add(groupPanel, BorderLayout.CENTER);
 		this.add(createAddGroupButton(), BorderLayout.SOUTH);
-		
-		this.pack();
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("View My Groups");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
-	/**
-	 * Uses a List of threads to create JLabels and JButtons
-	 * for each thread.
-	 */
-	private void setThreads() {
+	private void setGroups() {
 		for (Group group: myDatabase.getPrivateGroups(myUser)) {
-			JPanel threadPanel = new JPanel();
-			JLabel tempLabel = new JLabel("Group Name:    " + group.getGroupName());
-			JLabel tempLabel2 = new JLabel("Created by:      " + group.getAdminName());
+			JPanel groupPanel = new JPanel();
+			JLabel groupNameLabel = new JLabel("Group Name:    " + group.getGroupName());
+			JLabel createdByLabel = new JLabel("Created by:      " + group.getAdminName());
 			
+			groupPanel.setLayout(new GridLayout(2, 1));
+			groupPanel.add(groupNameLabel);
+			groupPanel.add(createdByLabel);
+			groupPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			
-			threadPanel.setLayout(new GridLayout(2, 1));
-			
-			threadPanel.add(tempLabel);
-			threadPanel.add(tempLabel2);
-			
-			threadPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			
-			myThreadComponents.put(threadPanel, createViewButton(group));
+			myThreadComponents.put(groupPanel, createViewButton(group));
 		}
 	}
 	
 	private JButton createViewButton(Group theGroup) {
-		JButton tempButton = new JButton("View Private Group");
-		tempButton.addActionListener(viewButtonAction(theGroup));
+		JButton viewButton = new JButton("View Private Group");
+		viewButton.addActionListener(viewButtonAction(theGroup));
 		
-		return tempButton;
+		return viewButton;
 	}
 	
 	private ActionListener viewButtonAction(Group theGroup) {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new CurrentGroupScreen(myDatabase, theGroup,  myUser);
+				dispose();
 			}
 		};
 	}
 	
 	private JButton createAddGroupButton() {
-		JButton tempButton = new JButton("Create New Private Group");
-		tempButton.addActionListener(newPrivateGroupButtonAction());
+		JButton addGroupButton = new JButton("Create New Private Group");
+		addGroupButton.addActionListener(addGroupButtonAction());
 		
-		return tempButton;
+		return addGroupButton;
 	}
 	
-	private ActionListener newPrivateGroupButtonAction() {
+	private ActionListener addGroupButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new CreateGroupScreen(myDatabase, myUser);
+				dispose();
 			}
 		};
 	}

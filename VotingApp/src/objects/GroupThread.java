@@ -8,8 +8,7 @@ public class GroupThread {
 	private String myThreadCreator;
 	private String myTitle;
 	
-	public GroupThread(String theGroupName, String theGroupCreator, int theThreadID, String theThreadCreator, String theTitle)
-	{
+	public GroupThread(String theGroupName, String theGroupCreator, int theThreadID, String theThreadCreator, String theTitle) {
 		myGroupName = theGroupName;
 		myGroupCreator = theGroupCreator;
 		myThreadID = theThreadID;
@@ -17,28 +16,23 @@ public class GroupThread {
 		myTitle = theTitle;
 	}
 	
-	public String getGroupName()
-	{
+	public String getGroupName() {
 		return myGroupName;
 	}
 	
-	public String getGroupCreator()
-	{
+	public String getGroupCreator() {
 		return myGroupCreator;
 	}
 	
-	public int getThreadID()
-	{
+	public int getThreadID() {
 		return myThreadID;
 	}
 	
-	public String getThreadCreator()
-	{
+	public String getThreadCreator() {
 		return myThreadCreator;
 	}
 	
-	public String getTitle()
-	{
+	public String getTitle() {
 		return myTitle;
 	}
 }

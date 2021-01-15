@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,8 +21,8 @@ import objects.RegisteredUser;
 import objects.VotingThread;
 
 public class MyThreadsScreen extends JFrame{
-	
-	/**Used to create components for each Thread*/
+
+	private static final long serialVersionUID = 6926040991323789520L;
 	private Map<JPanel, JButton> myThreadComponents;
 	private DatabaseObject myDatabase;
 	private RegisteredUser myUser;
@@ -32,43 +33,36 @@ public class MyThreadsScreen extends JFrame{
 		myThreadComponents = new HashMap<JPanel, JButton>();
 		myUser = theUser;
 		
-		setThreads();
-		
-		start();
+		this.setThreads();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
-	/**
-	 * Sets up components for the JFrame.
-	 */
-	private void start() {
+	private void constructJFrame() {
 		
 		GridLayout grid = new GridLayout(myThreadComponents.size(), 2, 5, 10);
 		
-		
 		this.setLayout(grid);
+		
 		for (JPanel title: myThreadComponents.keySet()) {
 			this.add(title);
 			this.add(myThreadComponents.get(title));
 		}
-		this.setTitle("View Threads");
-		
-		this.pack();
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("View Threads");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
-	/**
-	 * Uses a List of threads to create JLabels and JButtons
-	 * for each thread.
-	 */
 	private void setThreads() {
 		for (VotingThread thread: myDatabase.getUserThreads(myUser)) {
-			JPanel threadPanel = new JPanel();
-			JLabel tempLabel = new JLabel("Thread Title:      " + thread.getTitle());
-			JLabel tempLabel2 = new JLabel("Date Created:      " + thread.getDate().toString());
-			
 			String status;
 			
 			if (thread.getOpenStatus().equals("TRUE"))
@@ -76,31 +70,33 @@ public class MyThreadsScreen extends JFrame{
 			else 
 				status = "Closed";
 			
-			JLabel tempLabel3 = new JLabel("Status:           " + status);
+			JPanel threadPanel = new JPanel();
+			JLabel threadLabel = new JLabel("Thread Title:      " + thread.getTitle());
+			JLabel dateLabel = new JLabel("Date Created:      " + thread.getDate().toString());
+			JLabel statusLabel = new JLabel("Status:           " + status);
+			JButton viewButton = createViewButton(thread);
 			
 			threadPanel.setLayout(new GridLayout(3, 1));
-			
-			threadPanel.add(tempLabel);
-			threadPanel.add(tempLabel2);
-			threadPanel.add(tempLabel3);
-			
+			threadPanel.add(threadLabel);
+			threadPanel.add(dateLabel);
+			threadPanel.add(statusLabel);
 			threadPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			
-			myThreadComponents.put(threadPanel, createViewButton(thread));
+			myThreadComponents.put(threadPanel, viewButton);
 		}
 	}
 	
 	private JButton createViewButton(VotingThread theThread) {
-		JButton tempButton = new JButton("View Thread");
-		tempButton.addActionListener(viewButtonAction(theThread));
+		JButton viewButton = new JButton("View Thread");
+		viewButton.addActionListener(viewButtonAction(theThread));
 		
-		return tempButton;
+		return viewButton;
 	}
 	
 	private ActionListener viewButtonAction(VotingThread theThread) {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new CurrentUserThreadScreen(theThread, myDatabase, myUser);
+				dispose();
 			}
 		};
 	}

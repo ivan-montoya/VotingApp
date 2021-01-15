@@ -11,13 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import database.DatabaseObject;
@@ -26,96 +25,84 @@ import objects.GroupMember;
 import objects.RegisteredUser;
 
 public class CreateGroupScreen extends JFrame {
-	/* READ THIS! IMPORTANT
-	 * 
-	 * This class should save the information in
-	 * the JTextFields inside a new Thread then
-	 * pass that Thread to MainScreen.
-	 */
-	private JTextField myName;
-	
-	private JPanel myPanel;
-	private JButton myCreateButton;
-	
-	private int myOptionsAmount;
-	private List<JTextField> myMembers;
-	private JRadioButton myPrivateButton;
-	private JRadioButton myPublicButton;
 
+	private static final long serialVersionUID = 7284166146613755476L;
+	private JTextField myName;
+	private JPanel myPanel;
+	private List<JTextField> myMembers;
 	private DatabaseObject myDatabase;
 	private RegisteredUser myUsername;
 	
 	public CreateGroupScreen(DatabaseObject theDatabase, RegisteredUser theUser) {
-		
 		myDatabase = theDatabase;
 		myUsername = theUser;
 		myPanel = new JPanel();
 		myMembers = new LinkedList<JTextField>();
-		createJFrame();
+		
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
-	/**
-	 * Sets up and starts JFrame Window.
-	 */
-	private void createJFrame() {
-		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
-		
+	private void constructJFrame() {
 		JPanel namePanel = createNamePanel();
-		myPanel.add(namePanel);
+		JTextField memberField = new JTextField(25);
+		myMembers.add(memberField);
 		
 		JPanel optionPanel = new JPanel(new FlowLayout());
-		
-		JTextField tempField = new JTextField(25);
-		myMembers.add(tempField);
 		optionPanel.add(new JLabel("Member 1:"));
-		optionPanel.add(tempField);
-		myPanel.add(optionPanel);
+		optionPanel.add(memberField);
 		
-		// More Components
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(1, 2));
 		buttonPanel.add(addMemberButton());
-		buttonPanel.add(addCreateGroupButton());
+		buttonPanel.add(createGroupButton());
+		
+		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+		myPanel.add(namePanel);
+		myPanel.add(optionPanel);
+		
 		this.add(myPanel, BorderLayout.CENTER);
 		this.add(buttonPanel, BorderLayout.SOUTH);
-		this.setTitle("Create Private Group");
-		
-		this.pack();
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("Create Private Group");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
 	private JPanel createNamePanel() {
 		JPanel namePanel = new JPanel();
 		myName = new JTextField(35);
+		
 		namePanel.add(new JLabel("Group Name:            "));
 		namePanel.add(myName);
 		
 		return namePanel;
 	}
 	
-	/**
-	 * Sets necessary elements for the Add option button.
-	 */
 	public JButton addMemberButton() {
-		JButton addOptionButton = new JButton("Add Member");
-		addOptionButton.addActionListener(addMemberAction());
+		JButton addMemberButton = new JButton("Add Member");
+		addMemberButton.addActionListener(addMemberAction());
 		
-		return addOptionButton;
+		return addMemberButton;
 	}
 	
 	private ActionListener addMemberAction() {
 		return  new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JTextField tempField = new JTextField(25);
-				myMembers.add(tempField);
+				JTextField memberField = new JTextField(25);
+				myMembers.add(memberField);
 				
 				JPanel optionPanel = new JPanel(new FlowLayout());
 				optionPanel.add(new JLabel("Member " + myMembers.size() + ":"));
 				
-				optionPanel.add(tempField);
+				optionPanel.add(memberField);
 				myPanel.add(optionPanel);
 				
 				revalidate();
@@ -123,23 +110,18 @@ public class CreateGroupScreen extends JFrame {
 			}
 		};
 	}
-	
-	/**
-	 * Sets up Create Thread button.
-	 */
-	public JButton addCreateGroupButton() {
-		JButton createButton = new JButton("Create Private Group");
-		createButton.addActionListener(createGroupAction());
+
+	private JButton createGroupButton() {
+		JButton createGroupButton = new JButton("Create Private Group");
+		createGroupButton.addActionListener(createGroupAction());
 		
-		return createButton;
+		return createGroupButton;
 	}
 	
 	private ActionListener createGroupAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
 				if (hasValidMembers()) {
-					
 					myDatabase.addGroup(new Group(myName.getText(), myUsername.getUser()));
 					
 					for (int i = 0; i < myMembers.size(); i++) {
@@ -149,7 +131,6 @@ public class CreateGroupScreen extends JFrame {
 					
 					myDatabase.addGroupMember(new GroupMember(myName.getText(), myUsername.getUser(), myUsername.getUser()));
 
-					
 					JOptionPane.showMessageDialog(null, "Group Created.");
 					dispose();
 				}

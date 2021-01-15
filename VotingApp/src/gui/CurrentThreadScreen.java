@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,8 +26,8 @@ import database.DatabaseObject;
 
 public class CurrentThreadScreen extends JFrame {
 	
-	VotingThread myThread;
-	
+	private static final long serialVersionUID = -3203442531577148798L;
+	private VotingThread myThread;
 	private DatabaseObject myDatabase;
 	private List<JRadioButton> myCandidates;
 	private RegisteredUser myUser;
@@ -36,7 +37,7 @@ public class CurrentThreadScreen extends JFrame {
 		myDatabase = thedatabase;
 		myUser = theUser;
 		constructJFrame();
-		setupScreenOptions();
+		setJFrameDetails();
 		
 	}
 	
@@ -67,24 +68,25 @@ public class CurrentThreadScreen extends JFrame {
 		this.add(createCancelButton());
 	}
 	
-	private void setupScreenOptions() {
-		this.setTitle(myThread.getTitle());
-		
-		this.pack();
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("View Thread");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
 	private JButton createCancelButton() {
-		JButton tempButton = new JButton("Cancel Vote");
-		tempButton.addActionListener(CancelButtonAction());
+		JButton cancelButton = new JButton("Cancel Vote");
+		cancelButton.addActionListener(cancelButtonAction());
 		
-		return tempButton;
+		return cancelButton;
 	}
 	
-	private ActionListener CancelButtonAction() {
+	private ActionListener cancelButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -93,17 +95,17 @@ public class CurrentThreadScreen extends JFrame {
 	}
 	
 	private JButton createVoteButton() {
-		JButton tempButton;
+		JButton voteButton;
+		
 		if (myDatabase.checkIfUserVoted(myUser, myThread) || myThread.getOpenStatus().equals("FALSE")) {
-			tempButton = new JButton("View Results");
-			tempButton.addActionListener(viewResultsAction());
+			voteButton = new JButton("View Results");
+			voteButton.addActionListener(viewResultsAction());
 		} else {
-			tempButton = new JButton("Submit Vote");
-			tempButton.addActionListener(voteButtonAction());
+			voteButton = new JButton("Submit Vote");
+			voteButton.addActionListener(voteButtonAction());
 		}
 
-		
-		return tempButton;
+		return voteButton;
 	}
 	
 	private ActionListener voteButtonAction() {

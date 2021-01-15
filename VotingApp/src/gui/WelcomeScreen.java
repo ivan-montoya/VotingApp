@@ -10,6 +10,10 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Arrays;
+
 import javax.swing.*;
 
 import objects.RegisteredUser;
@@ -38,6 +42,8 @@ public class WelcomeScreen extends JFrame {
 	/**Field used to get Password associated with account.*/
 	private JPasswordField myLogPassword;
 	
+	private JCheckBox myRegisterCheckBox;
+	
 	private DatabaseObject myDatabase;
 
 	public WelcomeScreen() {
@@ -46,24 +52,30 @@ public class WelcomeScreen extends JFrame {
 		
 		myDatabase = new DatabaseObject();
 		
-		this.constructJPanel();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
 	/**
 	 * Sets up components inside the JFrame as well as setting the JFrame
 	 * settings.
 	 */
-	public void constructJPanel() {
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+	public void constructJFrame() {
 		this.addWelcomeLabel();
 		this.addRegisterPanel();
 		this.addLogInPanel();
-		this.setTitle("Log in");
 		
-		// Sets dimensions and location
-		this.setDimensionsAndLocation();
-        
+	}
+	
+	private void setJFrameDetails() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Log in");
+		this.pack();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 		this.setResizable(false);
         this.setVisible(true);
 	}
@@ -83,6 +95,7 @@ public class WelcomeScreen extends JFrame {
 		
 		// Sets up Register account components
 		GridLayout grid = new GridLayout(4,2);
+		
 		myRegisterPanel.setLayout(grid);
 		myRegisterPanel.add(new JLabel("Username:"));
 		myRegisterAccount.setColumns(15);
@@ -96,6 +109,9 @@ public class WelcomeScreen extends JFrame {
 		
 		this.setRegisterButton();
 		myRegisterPanel.add(myRegisterButton);
+		
+		this.setShowPasswordBox();
+		myRegisterPanel.add(myRegisterCheckBox);
 		
 		this.add(myRegisterPanel, BorderLayout.WEST);
 		myRegisterPanel.setBorder(BorderFactory.createTitledBorder("Register Account"));
@@ -115,16 +131,19 @@ public class WelcomeScreen extends JFrame {
 			 */
 			public void actionPerformed(ActionEvent e) {
 				// These statements just show messages to the user
+				char[] registerPassword = myRegisterPassword.getPassword();
+				char[] confirmPassword = myConfirmPassword.getPassword();
+				
 				if (myRegisterAccount.getText().length() < 6) {
 					JOptionPane.showMessageDialog(null, "Username must contain at least 6 characters!");
-				} else if (myRegisterPassword.getText().length() < 8) {
+				} else if (registerPassword.length < 8) {
 					JOptionPane.showMessageDialog(null, "Password must be at least 8 characters!");
-				} else if (!myRegisterPassword.getText().equals(myConfirmPassword.getText())) {
+				} else if (!Arrays.equals(registerPassword, confirmPassword)) {
 					JOptionPane.showMessageDialog(null, "Password fields must match!");
 				} else if (myDatabase.hasRegisteredUser(myRegisterAccount.getText())) {
 					JOptionPane.showMessageDialog(null, "Username is already being used!");
 				} else {
-					new NewAccountScreen(myRegisterAccount.getText(), myRegisterPassword.getText(), myDatabase);
+					new NewAccountScreen(myRegisterAccount.getText(), new String (registerPassword), myDatabase);
 					
 					// Empties fields
 					myRegisterAccount.setText(null);
@@ -164,47 +183,53 @@ public class WelcomeScreen extends JFrame {
 	 */
 	public void setLogInButton() {
 		myLogButton = new JButton("Submit");
-		myLogButton.addActionListener(createLogInAction()); 
+		myLogButton.addActionListener(logInAction()); 
 	}
 	
-	private ActionListener createLogInAction() {
+	private ActionListener logInAction() {
 		return new  ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				logInAction(findUser());
+				if (!isCorrectLogin()) {
+					JOptionPane.showMessageDialog(null, "Invalid Username or password");
+				} else {
+					new MainScreen(myDatabase.getRegisteredUser(myLogAccount.getText()), myDatabase);
+					dispose();
+				}
 			}
 		};
 	}
 	
-	private void logInAction(boolean isValidUser) {
-		if (!isValidUser) {
-			JOptionPane.showMessageDialog(null, "Invalid Username or password");
-		} else {
-			// Opens account if information is in the database
-			//
-			new MainScreen(myDatabase.getRegisteredUser(myLogAccount.getText()), myDatabase);
-			dispose();
-		}
+	private void setShowPasswordBox() {
+		myRegisterCheckBox = new JCheckBox("Show Password");
+		myRegisterCheckBox.addItemListener(showPasswordBoxAction());
 	}
 	
-	private boolean findUser() {
+	private ItemListener showPasswordBoxAction() {
+		return new ItemListener() {
+		    public void itemStateChanged(ItemEvent e) {
+		        if (e.getStateChange() != ItemEvent.SELECTED) {
+		            myRegisterPassword.setEchoChar('*');
+		            myConfirmPassword.setEchoChar('*');
+		        } else {
+		             myRegisterPassword.setEchoChar((char) 0);
+		             myConfirmPassword.setEchoChar((char) 0);
+		        }
+		    }
+		};
+	}
+
+	private boolean isCorrectLogin() {
 		boolean isValidUser = false;
-		
 		RegisteredUser user = myDatabase.getRegisteredUser(myLogAccount.getText());
 
 		if (user != null) {
 			String account = user.getUser();
-			String password = user.getPassword();
+			char[] password = user.getPassword().toCharArray();
 			
-			if (myLogAccount.getText().equals(account) && myLogPassword.getText().equals(password))
+			if (myLogAccount.getText().equals(account) && Arrays.equals(password, myLogPassword.getPassword()))
 				isValidUser = true;
 		}
 		
 		return isValidUser;
-	}
-	
-	private void setDimensionsAndLocation() {
-		this.pack();
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 	}
 }

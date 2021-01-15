@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,15 +43,19 @@ public class NewAccountScreen extends JFrame {
 		myEmailField = new JTextField();
 		myDOBField = new JTextField();
 		
-		constructJFrame();
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
 	private void constructJFrame() {
 		
 		JPanel centerPanel = new JPanel();
+		JPanel bottomPanel = new JPanel();
 		GridLayout layout = new GridLayout(3, 2);
-		centerPanel.setLayout(layout);
+		JButton registerButton = createRegisterButton();
+		JButton cancelButton = createCancelButton();
 		
+		centerPanel.setLayout(layout);
 		centerPanel.add(new JLabel("Name:"));
 		centerPanel.add(myNameField);
 		centerPanel.add(new JLabel("Email:"));
@@ -58,26 +63,30 @@ public class NewAccountScreen extends JFrame {
 		centerPanel.add(new JLabel("Date of Birth:"));
 		centerPanel.add(myDOBField);
 		
-		JPanel bottomPanel = new JPanel();
-		bottomPanel.add(createRegisterButton());
-		bottomPanel.add(createCancelButton());
+		bottomPanel.add(registerButton);
+		bottomPanel.add(cancelButton);
 		
 		this.add(centerPanel, BorderLayout.CENTER);
 		centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		this.add(bottomPanel, BorderLayout.SOUTH);
 		
-		this.setTitle("Register Account");
-		
-		this.pack();
+
+	}
+	
+	private void setJFrameDetails() {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
+		
+		this.setIconImage(titleImage.getImage());
+		this.setTitle("Register Account");
+		this.pack();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
 	private JButton createRegisterButton() {
 		JButton registerButton = new JButton("Register Account");
-		registerButton.addActionListener(registerUserAction());
+		registerButton.addActionListener(registerButtonAction());
 		
 		return registerButton;
 	}
@@ -86,7 +95,7 @@ public class NewAccountScreen extends JFrame {
 		return !myNameField.getText().isEmpty() && !myEmailField.getText().isEmpty() && !myDOBField.getText().isEmpty();
 	}
 	
-	private ActionListener registerUserAction() {
+	private ActionListener registerButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (allFieldsFilled()) {
@@ -108,12 +117,12 @@ public class NewAccountScreen extends JFrame {
 	
 	private JButton createCancelButton() {
 		JButton cancelButton = new JButton("Cancel Registration");
-		cancelButton.addActionListener(cancelAction());
+		cancelButton.addActionListener(cancelButtonAction());
 		
 		return cancelButton;
 	}
 	
-	private ActionListener cancelAction() {
+	private ActionListener cancelButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
