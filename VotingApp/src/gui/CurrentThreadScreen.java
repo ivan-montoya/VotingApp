@@ -120,7 +120,6 @@ public class CurrentThreadScreen extends JFrame {
 						myDatabase.addVote(myUser, myThread);
 						dispose();
 					}
-						
 				}
 			}
 		};

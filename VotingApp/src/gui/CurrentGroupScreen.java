@@ -61,7 +61,6 @@ public class CurrentGroupScreen extends JFrame{
 		this.add(new JLabel("Group Name: " + myGroup.getGroupName()), BorderLayout.NORTH);
 		this.add(tablePanel, BorderLayout.CENTER);
 		this.add(buttonPanel, BorderLayout.SOUTH);
-
 	}
 	
 	private void setJFrameDetails() {
@@ -97,14 +96,15 @@ public class CurrentGroupScreen extends JFrame{
 		
 		threadsTableModel.addColumn("Thread Name");
 		threadsTableModel.addColumn("Thread Creator");
+		threadsTableModel.addColumn("Thread ID");
 		
 		if (myThreads.size() == 0) {
-			threadsTableModel.insertRow(0, new Object[] {"To display", " "});
-			threadsTableModel.insertRow(0, new Object[] {"No Threads", " "});
+			threadsTableModel.insertRow(0, new Object[] {"To display", " ", ""});
+			threadsTableModel.insertRow(0, new Object[] {"No Threads", " ", ""});
 			
 		} else {
 			for (GroupThread thread: myThreads) {
-				threadsTableModel.insertRow(0, new Object[] {thread.getTitle(), thread.getThreadCreator()});
+				threadsTableModel.insertRow(0, new Object[] {thread.getTitle(), thread.getThreadCreator(), thread.getThreadID()});
 			}
 		}
 		
@@ -165,8 +165,12 @@ public class CurrentGroupScreen extends JFrame{
 				
 				if (cell == -1) {
 					JOptionPane.showMessageDialog(null, "Must select thread to view!");
-				} else {
-					VotingThread tempThread = myDatabase.getThread(myThreads.get(cell).getThreadCreator(), myThreads.get(cell).getThreadID());
+				} else if (myThreads.size() == 0){
+					JOptionPane.showMessageDialog(null, "No Threads to view!");
+				}
+				else {
+					VotingThread tempThread = myDatabase.getThread((String) myThreadsTable.getModel().getValueAt(cell, 1), 
+							(int) myThreadsTable.getModel().getValueAt(cell, 2));
 					new CurrentThreadScreen(tempThread,myDatabase,  myUser);
 				}
 			}

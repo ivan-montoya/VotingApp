@@ -18,7 +18,6 @@ import javax.swing.JRadioButton;
 
 import database.DatabaseObject;
 import objects.Candidate;
-import objects.RegisteredUser;
 import objects.VotingThread;
 
 public class CurrentUserThreadScreen extends JFrame{
@@ -27,53 +26,52 @@ public class CurrentUserThreadScreen extends JFrame{
 	private VotingThread myThread;
 	private DatabaseObject myDatabase;
 	private List<JRadioButton> myCandidates;
-	private RegisteredUser myUser;
 	
-	public CurrentUserThreadScreen(VotingThread theThread, DatabaseObject thedatabase, RegisteredUser theUser) {
+	public CurrentUserThreadScreen(VotingThread theThread, DatabaseObject thedatabase) {
 		myThread = theThread;
 		myDatabase = thedatabase;
-		myUser = theUser;
-		constructJFrame();
-		setupScreenOptions();
 		
+		this.constructJFrame();
+		this.setJFrameDetails();
 	}
 	
 	private void constructJFrame() {
 		GridLayout mainGrid = new GridLayout(myThread.getNumCandidates() + 3, 2);
+		JButton viewResultsButton = createViewResultsButton();
+		JButton cancelButton = createCancelButton();
+		ButtonGroup group = new ButtonGroup();
+		List<Candidate> candidates = myDatabase.getThreadCandidates(myThread);
+		myCandidates= new ArrayList<JRadioButton>();
+		
 		this.setLayout(mainGrid);
 		this.add(new JLabel("Title: "));
 		this.add(new JLabel(myThread.getTitle()));
 		this.add(new JLabel("Description: "));
 		this.add(new JLabel(myThread.getDescription()));
 		
-		ButtonGroup group = new ButtonGroup();
-		
-		List<Candidate> candidates = myDatabase.getThreadCandidates(myThread);
-		myCandidates= new ArrayList<JRadioButton>();
-		
 		for(int i = 0; i < candidates.size(); i++) {
 			if (candidates.get(i).getDescription() != "") {
-				JRadioButton temp = new JRadioButton(candidates.get(i).getDescription());
-				group.add(temp);
-				myCandidates.add(temp);
+				JRadioButton candidateButton = new JRadioButton(candidates.get(i).getDescription());
+				
+				group.add(candidateButton);
+				myCandidates.add(candidateButton);
 				this.add(new JLabel("Candidate #" + (i + 1)));
-				this.add(temp);
+				this.add(candidateButton);
 			}
 		}
 		
-		this.add(createVoteButton());
-		this.add(createCancelButton());
+		this.add(viewResultsButton);
+		this.add(cancelButton);
 	}
 	
-	private void setupScreenOptions() {
-		this.setTitle(myThread.getTitle());
+	private void setJFrameDetails() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		ImageIcon titleImage = new ImageIcon("Images/wsu_logo.png");
 		
+		this.setTitle("View My Thread");
 		this.setIconImage(titleImage.getImage());
 		this.pack();
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
         this.setVisible(true);
 	}
 	
@@ -92,18 +90,19 @@ public class CurrentUserThreadScreen extends JFrame{
 		};
 	}
 	
-	private JButton createVoteButton() {
-		JButton tempButton;
+	private JButton createViewResultsButton() {
+		JButton viewResultsButton;
+		
 		if (myDatabase.checkIfThreadIsOpen(myThread)) {
-			tempButton = new JButton("Close Voting");
-			tempButton.addActionListener(closeVotingButtonAction());
+			viewResultsButton = new JButton("Close Voting");
+			viewResultsButton.addActionListener(closeVotingButtonAction());
 		} else {
-			tempButton = new JButton("View Results");
-			//tempButton.addActionListener(voteButtonAction());
+			viewResultsButton = new JButton("View Results");
+			viewResultsButton.addActionListener(viewResultsAction());
 		}
 
 		
-		return tempButton;
+		return viewResultsButton;
 	}
 	
 	private ActionListener closeVotingButtonAction() {
@@ -111,6 +110,15 @@ public class CurrentUserThreadScreen extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				myDatabase.closeVotingOnThread(myThread);
 				JOptionPane.showMessageDialog(null, "Closed Voting for Thread.");
+				dispose();
+			}
+		};
+	}
+	
+	private ActionListener viewResultsAction() {
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new ThreadResultScreen(myDatabase, myThread);
 				dispose();
 			}
 		};

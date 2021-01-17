@@ -95,7 +95,7 @@ public class MyThreadsScreen extends JFrame{
 	private ActionListener viewButtonAction(VotingThread theThread) {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new CurrentUserThreadScreen(theThread, myDatabase, myUser);
+				new CurrentUserThreadScreen(theThread, myDatabase);
 				dispose();
 			}
 		};

@@ -143,10 +143,13 @@ public class CreateThreadScreen extends JFrame {
 		
 		myGroups = myDatabase.getPrivateGroups(myUser);
 		
-		for (int i = 0; i < myGroups.size();i++) {
-			groups.addItem(myGroups.get(i).getGroupName());
-		}
-		
+		if (myGroups.size() == 0) 
+			groups.addItem("N/A");
+		else {
+			for (int i = 0; i < myGroups.size();i++) {
+				groups.addItem(myGroups.get(i).getGroupName());
+			}
+		}		
 		groups.setEnabled(false);
 		
 		return groups;
@@ -225,7 +228,7 @@ public class CreateThreadScreen extends JFrame {
 					
 					myDatabase.addVotingThread(tempThread);
 					
-					if (myPrivateButton.isEnabled()) {
+					if (myPrivateButton.isSelected() && myGroups.size() != 0) {
 						myDatabase.addGroupThread(tempThread, myGroups.get(myGroupsComboBox.getSelectedIndex()));
 					}
 					
