@@ -24,14 +24,14 @@ import objects.RegisteredUser;
 public class PrivateGroupsScreen extends JFrame{
 	
 	private static final long serialVersionUID = 838303835754789248L;
-	private Map<JPanel, JButton> myThreadComponents;
+	private Map<JPanel, JButton> myGroupComponents;
 	private DatabaseObject myDatabase;
 	private RegisteredUser myUser;
 	
 	public PrivateGroupsScreen(DatabaseObject database, RegisteredUser theUser) {
 		
 		myDatabase = database;
-		myThreadComponents = new HashMap<JPanel, JButton>();
+		myGroupComponents = new HashMap<JPanel, JButton>();
 		myUser = theUser;
 		
 		this.setGroups();
@@ -40,16 +40,16 @@ public class PrivateGroupsScreen extends JFrame{
 	}
 	
 	private void constructJFrame() {
-		GridLayout grid = new GridLayout(myThreadComponents.size(), 2, 5, 10);
+		GridLayout grid = new GridLayout(myGroupComponents.size(), 2, 5, 10);
 		JPanel groupPanel = new JPanel();
 		groupPanel.setLayout(grid);
 		
-		if (myThreadComponents.size() == 0)
+		if (myGroupComponents.size() == 0)
 			groupPanel.add(new JLabel("No Groups Found."));	
 		else {
-			for (JPanel title: myThreadComponents.keySet()) {
+			for (JPanel title: myGroupComponents.keySet()) {
 				groupPanel.add(title);
-				groupPanel.add(myThreadComponents.get(title));
+				groupPanel.add(myGroupComponents.get(title));
 			}
 		}
 
@@ -80,7 +80,7 @@ public class PrivateGroupsScreen extends JFrame{
 			groupPanel.add(createdByLabel);
 			groupPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			
-			myThreadComponents.put(groupPanel, createViewButton(group));
+			myGroupComponents.put(groupPanel, createViewButton(group));
 		}
 	}
 	

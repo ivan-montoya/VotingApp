@@ -66,7 +66,6 @@ CREATE TABLE GroupMember (
 CREATE TABLE GroupThread (
 	group_name      VARCHAR(20),
 	group_creator   VARCHAR(30),
-	title           VARCHAR(80),
 	thread_ID       INTEGER,
 	thread_creator  VARCHAR(30),
 

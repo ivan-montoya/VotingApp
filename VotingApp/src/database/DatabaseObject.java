@@ -396,7 +396,17 @@ public class DatabaseObject {
 			return null;
 		}
 		
-		return groupThreads;
+		return getGroupThreadsHelper(groupThreads);
+	}
+	
+	public List<GroupThread> getGroupThreadsHelper(List<GroupThread> theGroupThreads) {
+		List<GroupThread> votingThreads = new ArrayList<GroupThread>();
+		
+		for (GroupThread thread : theGroupThreads) {
+			//votingThreads.add(getThread(thread.getThreadCreator(), thread.getThreadID()));
+		}
+		
+		return votingThreads;
 	}
 	
 	public void addGroup(Group theGroup) {

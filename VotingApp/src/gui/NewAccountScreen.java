@@ -121,14 +121,15 @@ public class NewAccountScreen extends JFrame {
 	private ActionListener registerButtonAction() {
 		return new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!hasValidName())
+				if (!allFieldsFilled())
+					JOptionPane.showMessageDialog(null, "All fields must be filled!");
+				else if (!hasValidName())
 					JOptionPane.showMessageDialog(null, "Must have valid name!");
 				else if (!hasValidEmail())
 					JOptionPane.showMessageDialog(null, "Must have valid email!");
 				else if (!hasValidYear()) 
 					JOptionPane.showMessageDialog(null, "Must have valid year of birth!");
-				else if (!allFieldsFilled())
-					JOptionPane.showMessageDialog(null, "All fields must be filled!");
+
 				else {
 					JOptionPane.showMessageDialog(null, "Registered account.");
 					

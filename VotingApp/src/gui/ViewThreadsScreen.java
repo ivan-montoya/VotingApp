@@ -5,6 +5,7 @@ import objects.VotingThread;
 
 import database.DatabaseObject;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -40,12 +41,21 @@ public class ViewThreadsScreen extends JFrame{
 	
 	private void constructJFrame() {
 		GridLayout grid = new GridLayout(myThreadComponents.size(), 2, 5, 10);
-		this.setLayout(grid);
+		JPanel threadPanel = new JPanel();
 		
-		for (JPanel title: myThreadComponents.keySet()) {
-			this.add(title);
-			this.add(myThreadComponents.get(title));
+		threadPanel.setLayout(grid);
+		
+		if (myThreadComponents.size() == 0) 
+			threadPanel.add(new JLabel("No Threads Found."));
+		else {
+			for (JPanel title: myThreadComponents.keySet()) {
+				threadPanel.add(title);
+				threadPanel.add(myThreadComponents.get(title));
+			}
 		}
+		
+		this.add(new JLabel("Public Threads:"), BorderLayout.NORTH);
+		this.add(threadPanel, BorderLayout.CENTER);
 	}
 	
 	private void setJFrameDetails() {

@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -166,9 +167,13 @@ public class CreateThreadScreen extends JFrame {
 	
 	private JPanel createDescriptionPanel() {
 		JPanel descriptionPanel = new JPanel();
-		myDescription = new JTextArea(2, 35);
+		myDescription = new JTextArea(3, 35);
+		myDescription.setLineWrap(true);
+		JScrollPane scroll = new JScrollPane (myDescription, 
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		
 		descriptionPanel.add(new JLabel("Description:"));
-		descriptionPanel.add(myDescription);
+		descriptionPanel.add(scroll);
 		
 		return descriptionPanel;
 	}

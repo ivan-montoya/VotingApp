@@ -1,13 +1,15 @@
 /**
  * 
  */
-package gui;
+package Driver;
 
 import java.awt.EventQueue;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import gui.WelcomeScreen;
 
 public class Driver {
     /**

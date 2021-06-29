@@ -97,6 +97,7 @@ public class CurrentGroupScreen extends JFrame{
 		threadsTableModel.addColumn("Thread Name");
 		threadsTableModel.addColumn("Thread Creator");
 		threadsTableModel.addColumn("Thread ID");
+		threadsTableModel.addColumn("Thread Status");
 		
 		if (myThreads.size() == 0) {
 			threadsTableModel.insertRow(0, new Object[] {"To display", " ", ""});

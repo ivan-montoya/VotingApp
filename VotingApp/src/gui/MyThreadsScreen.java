@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -28,7 +29,6 @@ public class MyThreadsScreen extends JFrame{
 	private RegisteredUser myUser;
 	
 	public MyThreadsScreen(DatabaseObject database, RegisteredUser theUser) {
-		
 		myDatabase = database;
 		myThreadComponents = new HashMap<JPanel, JButton>();
 		myUser = theUser;
@@ -39,15 +39,22 @@ public class MyThreadsScreen extends JFrame{
 	}
 	
 	private void constructJFrame() {
-		
 		GridLayout grid = new GridLayout(myThreadComponents.size(), 2, 5, 10);
+		JPanel threadPanel = new JPanel();
 		
-		this.setLayout(grid);
+		threadPanel.setLayout(grid);
 		
-		for (JPanel title: myThreadComponents.keySet()) {
-			this.add(title);
-			this.add(myThreadComponents.get(title));
+		if (myThreadComponents.size() == 0) 
+			threadPanel.add(new JLabel("No Threads Found."));
+		else {
+			for (JPanel title: myThreadComponents.keySet()) {
+				threadPanel.add(title);
+				threadPanel.add(myThreadComponents.get(title));
+			}
 		}
+		
+		this.add(new JLabel("My Threads:"), BorderLayout.NORTH);
+		this.add(threadPanel, BorderLayout.CENTER);
 	}
 	
 	private void setJFrameDetails() {

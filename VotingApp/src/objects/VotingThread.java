@@ -2,8 +2,8 @@ package objects;
 
 import java.util.Calendar;
 
-public class VotingThread
-{
+public class VotingThread {
+	
 	private String myTitle;
 	private String myDescription;
 	private int myNumCandidates;
